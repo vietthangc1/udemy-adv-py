@@ -1,5 +1,9 @@
 from typing import List
 from fpdf import FPDF
+import webbrowser
+import os
+from datetime import datetime
+import calendar
 
 
 class Flatmate:
@@ -17,13 +21,14 @@ class Bill:
     Contains information about monthly Bill,
     including amount, period in days
     """
-    def __init__(self, amount: int, flatmates: List[Flatmate], days = 30) -> None:
+    def __init__(self, amount: int, flatmates: List[Flatmate], period = "Dec 2020") -> None:
         self.amount = amount
-        self.days = days
         self.flatmates = flatmates
+        self.period = period
         
         self.total_days = self.calc_total_days()
         self.amt_per_days = self.amount / self.total_days
+        self.days = self.month_days()
 
     def calc_total_days(self) -> int:
         total_days = 0
@@ -34,6 +39,12 @@ class Bill:
     def calculate(self, flatmate: Flatmate) -> float:
         return self.amt_per_days * flatmate.days
         
+    def month_days(self) -> int:
+        period_parsed = datetime.strptime(self.period, "%b %Y")
+        month = period_parsed.month
+        year = period_parsed.year
+        return calendar.monthrange(year, month)[1]
+
 
 class PDFExporter:
     def __init__(self, bill: Bill) -> None:
@@ -47,6 +58,9 @@ class PDFExporter:
         )
 
         pdf.add_page()
+
+        # Add icon
+        pdf.image("https://cdn-icons-png.flaticon.com/512/4752/4752101.png", w=30, h=30)
         
         # Add title
         pdf.set_font(family="Times", size=24)
@@ -55,7 +69,8 @@ class PDFExporter:
         # Add metadata
         pdf.set_font(family="Times", size=20)
         pdf.cell(w=200, h=100, txt="Number of Days", border=border)
-        pdf.cell(w=200, h=100, txt=str(self.bill.days), border=border, ln=1)
+        pdf.cell(w=200, h=100, txt=str(self.bill.days), border=border)
+        pdf.cell(w=100, h=100, txt=str(self.bill.amount), border=border, ln=1)
 
         # Add column headers
         pdf.cell(w=200, h=40, txt="Flatmate name", border=border)
@@ -72,14 +87,24 @@ class PDFExporter:
 
         # Save to Billing.pdf 
         pdf.output(filename)
+        webbrowser.open("file://"+os.path.realpath(filename))
 
 if __name__ == "__main__":
-    flatmate1 = Flatmate("Thang", 25)
-    flatmate2 = Flatmate("Kem", 15)
-    
-    lexington = Bill(10000, [flatmate1, flatmate2], 30)
-    print(lexington.calculate(flatmate1))
-    print(lexington.calculate(flatmate2))
+    bill_amount = eval(input("Bill amount: "))
+    period = input("Bill period (e.g: Dec 2020): ")
+    num_flatmates = int(input("Number of Flatmates: "))
 
-    pdf_export = PDFExporter(lexington)
+    list_flatmates = []
+    for i in range(num_flatmates):
+        prompt_name = "Flatmate " + str(i+1) + " name: "
+        prompt_days = "Flatmate " + str(i+1) + " days occupied: "
+        
+        name = input(prompt_name)
+        days = int(input(prompt_days))
+
+        list_flatmates.append(Flatmate(name, days))
+
+    bill_instance = Bill(bill_amount, list_flatmates, period)
+
+    pdf_export = PDFExporter(bill_instance)
     pdf_export.export(border=False)

@@ -39,17 +39,24 @@ class ResultsPage(MethodView):
         file = FileStackUpload()
         url = file.upload()
 
-        return render_template("result.html", url_file = url)
+        return render_template(
+            "result.html", 
+            url_file = url,
+            name1=name1,
+            name2=name2,
+            amount1=bill.calculate(flatmate1),
+            amount2=bill.calculate(flatmate2),
+            )
         
 class BillForm(Form):
-    amount = StringField('Bill Amount: ')
-    period = StringField('Period: ')
+    amount = StringField('Bill Amount: ', default="1000")
+    period = StringField('Period: ', default="Dec 2020")
 
-    name1 = StringField('Name: ')
-    days1 = IntegerField('Days: ')
+    name1 = StringField('Name: ', default="People 1")
+    days1 = IntegerField('Days: ', default=20)
 
-    name2 = StringField('Name: ')
-    days2 = IntegerField('Days: ')
+    name2 = StringField('Name: ', default="People 2")
+    days2 = IntegerField('Days: ', default= 15)
 
     button = SubmitField('Calculate')
 

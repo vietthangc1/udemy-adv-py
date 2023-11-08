@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "email": "pvthang1700@gmail.com",
+                "password": "zlok rmyi tyoi pggo",
+                "api_key": "fe76de13803e4b1ba45968f61d1d2f57"
+            },
+            "args": ["--email", "pvthang1700@gmail.com","--password", "zlok rmyi tyoi pggo", "--api_key", "fe76de13803e4b1ba45968f61d1d2f57"]
+        }
+    ]
+}
